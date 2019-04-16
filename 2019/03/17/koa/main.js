@@ -6,7 +6,10 @@ var router = new Router()
 
 router.get('/302', (ctx, next) => {
     ctx.status = 302
-    ctx.redirect('/302.html')
+    ctx.body =  {
+        location: '/302.html'
+    }
+    // ctx.redirect('/302.html')
     next()
 })
 

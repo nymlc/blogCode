@@ -24,8 +24,8 @@
                 success: (data, xhr) => {
                     console.log('success', data, xhr)
                 },
-                error: (xhr) => {
-                    console.log('err', xhr)
+                error: (xhr, data) => {
+                    console.log('err', xhr, data)
                     console.log(xhr.getAllResponseHeaders())
                 }
             })

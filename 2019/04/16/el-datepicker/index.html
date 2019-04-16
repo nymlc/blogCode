@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .el-date-picker {
+            width: 250px;
+            margin: 0 !important;
+        }
+
+        .el-date-picker .popper__arrow {
+            display: none;
+        }
+
+        .el-date-picker__header {
+            margin: 6px 6px 0 6px;
+        }
+
+        .el-date-picker .el-picker-panel__content {
+            width: 212px;
+            margin: 6px 15px;
+            margin-top: 0;
+        }
+
+        .el-date-picker .el-date-table th {
+            padding: 0;
+        }
+
+        .el-date-picker .el-date-table td {
+            width: 22px;
+            height: 20px;
+            padding: 0;
+        }
+
+        .el-date-picker .el-date-table td div {
+            height: 20px;
+            padding: 0;
+        }
+
+        .el-date-picker .el-date-table td span {
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .el-date-picker__editor-wrap:first-child {
+            display: none;
+        }
+
+        .el-date-picker__time-header {
+            position: absolute;
+            bottom: -35px;
+            z-index: 10;
+            width: 60%;
+            padding: 0;
+            border: 0;
+            z-index: 10;
+        }
+
+        .el-date-picker__time-header input {
+            border: 0;
+        }
+
+        .el-date-picker__time-header input::-webkit-input-placeholder {
+            color: #409eff !important;
+        }
+
+        .el-date-picker .el-time-panel {
+            bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="date">
+        <div>
+            <div class="date-item">
+                <label>开始时间：</label>
+                <el-date-picker :picker-options="startPickerOptions" clear-icon="el-icon-circle-close"
+                    prefix-icon="el-icon-date" format="yyyy-MM-dd HH:mm" placeholder="默认为当前时间" type="datetime"
+                    v-model="startTimeParse">
+                </el-date-picker>
+            </div>
+            <div class="date-item">
+                <label>结束时间：</label>
+                <el-date-picker ref="end" align="right" :picker-options="endPickerOptions"
+                    clear-icon="el-icon-circle-close" prefix-icon="el-icon-date" format="yyyy-MM-dd HH:mm"
+                    placeholder="无" type="datetime" v-model="endTimeParse">
+                </el-date-picker>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                startTime: 0, //开始时间 传0为无限制
+                endTime: 0, //结束时间 传0为无限制
+            }
+        },
+        computed: {
+            startTimeParse: {
+                get: function () {
+                    if (this.startTime) {
+                        return new Date(+this.startTime)
+                    }
+                    // return '无'
+                },
+                set: function (val) {
+                    this.startTime = val != null ? val.valueOf() : 0
+                }
+            },
+            endTimeParse: {
+                get: function () {
+                    if (this.endTime) {
+                        return new Date(+this.endTime)
+                    }
+                    // return '无'
+                },
+                set: function (val) {
+                    this.endTime = val != null ? val.valueOf() : 0
+                }
+            },
+            startPickerOptions() {
+                if (this.endTime === 0) {
+                    // 若结束时间未设置，则开始时间不早于当前时间即可
+                    const startYMD = this.getYMD(this.startTime)
+                    const nowYMD = this.getYMD()
+                    return {
+                        disabledDate(time) {
+                            return time.getTime() < Date.now() - 8.64e7
+                        },
+                        selectableRange: startYMD === nowYMD ? `${this.getHM()}:00 - 23:59:00` : []
+                    }
+                } else {
+                    // 若有结束时间，则开始时间不晚于结束时间
+                    const endYMD = this.getYMD(this.endTime)
+                    const startYMD = this.getYMD(this.startTime)
+                    const nowYMD = this.getYMD()
+                    let selectableRange = []
+                    // 选择了当天
+                    if (nowYMD === startYMD) {
+                        // 结束时间也是当天
+                        if (endYMD === startYMD) {
+                            selectableRange = `${this.getHM()}:00 - ${this.getHM(this.endTime)}:00`
+                        } else {
+                            selectableRange = `${this.getHM()}:00 - 23:59:00`
+                        }
+                    } else {
+                        // 选中了结束时间
+                        if (endYMD === startYMD) {
+                            selectableRange = `00:00:00 - ${this.getHM(this.endTime)}:00`
+                        } else {
+                            selectableRange = []
+                        }
+                    }
+                    return {
+                        disabledDate: (time) => {
+                            return time.getTime() > this.endTime || time.getTime() < Date.now() - 8.64e7
+                        },
+                        selectableRange
+                    }
+                }
+            },
+            endPickerOptions() {
+                if (this.startTime === 0) {
+                    // 若开始时间未设置，则结束时间不早于当前时间即可
+                    const endYMD = this.getYMD(this.endTime)
+                    const nowYMD = this.getYMD()
+                    return {
+                        disabledDate(time) {
+                            return time.getTime() < Date.now() - 8.64e7
+                        },
+                        selectableRange: endYMD === nowYMD ? `${this.getHM()}:00 - 23:59:00` : []
+                    }
+                } else {
+                    // 若有开始时间，则结束时间不早于开始时间
+                    const endYMD = this.getYMD(this.endTime)
+                    const startYMD = this.getYMD(this.startTime)
+                    const nowYMD = this.getYMD()
+                    let selectableRange = []
+                    // 选择了当天
+                    if (nowYMD === endYMD) {
+                        // 开始时间也是当天
+                        if (endYMD === startYMD) {
+                            selectableRange = `${this.getHM(this.startTime)}:00 - 23:59:00`
+                        } else {
+                            selectableRange = `${this.getHM()}:00 - 23:59:00`
+                        }
+                    } else {
+                        // 选中了开始时间
+                        if (endYMD === startYMD) {
+                            selectableRange = `${this.getHM(this.startTime)}:00 - 23:59:00`
+                        } else {
+                            selectableRange = []
+                        }
+                    }
+                    return {
+                        disabledDate: (time) => {
+                            return time.getTime() < this.startTime - 8.64e7 || time.getTime() < Date.now() -
+                                8.64e7
+                        },
+                        selectableRange
+                    }
+                }
+            }
+        },
+        methods: {
+            getHM(time = Date.now()) {
+                time = time || Date.now()
+                const t = new Date(time)
+                return `${t}`.match(/\s(\d+:\d+):/)[1]
+            },
+            getYMD(time = Date.now()) {
+                time = time || Date.now()
+                return `${new Date(time)}`.match(/(.+)\s+\d+:/)[1]
+            }
+        }
+    })
+</script>
+
+</html>
