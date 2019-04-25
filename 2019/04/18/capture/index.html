@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+</head>
+
+<body>
+    <button id="capture">Capture</button>
+</body>
+<script>
+    const {
+        ipcRenderer
+    } = require('electron')
+    window.onload = function () {
+        document.getElementById('capture').addEventListener('click', function () {
+            ipcRenderer.send('capture')
+        })
+    }
+</script>
+
+</html>
