@@ -18,6 +18,7 @@ class Render {
     }
     init() {
         const { bounds: { width: screenWidth, height: screenHeight } } = this.currentScreen
+        console.log(this.bgSrc)
         this.$bg.style.backgroundImage = `url(${this.bgSrc})`
         this.$bg.style.backgroundSize = `${screenWidth}px ${screenHeight}px`
     }
@@ -29,13 +30,12 @@ const $canvas = document.getElementById('canvas')
 const $bg = document.getElementById('bg')
 
 
+getScreen((imageSrc) => {
+    new Render($bg, imageSrc)
+    // new Anchor($canvas)
+})
 document.body.addEventListener('mousedown', ({button}) => {
     if (button === 2) {
         window.close()
-    } else {
-        getScreen((imageSrc) => {
-            new Render($bg, imageSrc)
-            new Anchor($canvas)
-        })
     }
 }, true)

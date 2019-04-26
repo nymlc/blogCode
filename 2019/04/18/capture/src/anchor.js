@@ -4,13 +4,53 @@ class Anchor {
         // 截图区域的环境
         this.$canvas = $canvas
         this.ctx = $canvas.getContext('2d')
-        this.selectRect = { x: 96, y: 87, w: 82, h: 100 }
         // 屏幕相关属性
         const { scaleFactor, bounds: { width, height } } = getCurrentScreen()
         this.scaleFactor = scaleFactor
         this.screenWidth = width
         this.screenHeight = height
 
+        this.reset()
+
+        document.addEventListener('mousedown', this.onMouseDown.bind(this))
+        document.addEventListener('mousemove', this.onMouseMove.bind(this))
+        document.addEventListener('mouseup', this.onMouseUp.bind(this))
+    }
+    onMouseDown({pageX, pageY}) {
+        this.mouseDown = true
+        const { selectRect } = this
+        if (selectRect) {
+            // 
+        } else {
+            this.startPoint = {
+                x: pageX,
+                y: pageY
+            }
+        }
+    }
+    onMouseMove(event) {
+        const { mouseDown } = this
+        if (mouseDown) {
+            this.onMouseDrag(event)
+            return
+        }
+    }
+    onMouseUp(event) {
+        if (!this.mouseDown) {
+            return
+        }
+        this.mouseDown = false
+        this.drawRect()
+        this.startPoint = null
+    }
+    onMouseDrag({pageX, pageY}) {
+        const { x: sx, y: sy } = this.startPoint
+        let x1, x2, y1, y2
+        x1 = sx > pageX ? pageX : sx
+        x2 = sx > pageX ? sx : pageX
+        y1 = sy > pageY ? pageY : sy
+        y2 = sy > pageY ? sy: pageY
+        this.selectRect = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 }
         this.drawRect()
     }
     // 绘画截图区域
@@ -51,6 +91,11 @@ class Anchor {
         ctx.closePath()
         ctx.fill()
         ctx.stroke()
+    }
+    reset() {
+        this.mouseDown = false
+        this.startPoint = null
+        this.selectRect = null
     }
 }
 exports.Anchor = Anchor
