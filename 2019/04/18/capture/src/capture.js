@@ -38,6 +38,7 @@ const capture = () => {
             resizable: false,
             enableLargerThanScreen: true,
             hasShadow: false,
+            show: false
         })
         captureWin.setAlwaysOnTop(true, 'screen-saver')
         captureWin.setVisibleOnAllWorkspaces(true)
@@ -61,6 +62,9 @@ const capture = () => {
                 captureWins.splice(index, 1)
             }
             captureWins.forEach(win => win.close())
+        })
+        captureWin.once('ready-to-show', () => {
+            captureWin.show()
         })
         return captureWin
     })

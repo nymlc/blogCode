@@ -1,5 +1,6 @@
 
 const { getCurrentScreen } = require('./util')
+const { Anchor } = require('./anchor')
 const currentScreen = getCurrentScreen()
 class Render {
     /**
@@ -8,8 +9,7 @@ class Render {
      * @param {*} $bg 截图瞬间的供圈选的背景
      * @param {*} bgSrc 截图的src
      */
-    constructor($canvas, $bg, bgSrc) {
-        this.$canvas = $canvas
+    constructor($bg, bgSrc) {
         this.$bg = $bg
         this.bgSrc = bgSrc
         this.currentScreen = currentScreen
@@ -34,7 +34,8 @@ document.body.addEventListener('mousedown', ({button}) => {
         window.close()
     } else {
         getScreen((imageSrc) => {
-            new Render($canvas, $bg, imageSrc)
+            new Render($bg, imageSrc)
+            new Anchor($canvas)
         })
     }
 }, true)

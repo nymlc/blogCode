@@ -25,10 +25,6 @@ function getScreen(cb) {
 
             if (this.cb) {
                 this.cb(canvas.toDataURL('image/png'))
-                const fs = require('fs')
-                var base64Data = canvas.toDataURL('image/png').replace(/^data:image\/\w+;base64,/, "");
-                var dataBuffer = new Buffer(base64Data, 'base64');
-                fs.writeFile("image.png", dataBuffer, function(err) {});
             } else {
                 throw Error('need callback')
             }
