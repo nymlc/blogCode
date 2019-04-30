@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="./canvastools.css">
     <style>
         html,
         body,
@@ -28,21 +29,39 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
         }
-        #canvas {
+        canvas {
             position: absolute;
-            display: none;
+            /* visibility: hidden; */
             z-index: 1;
+            /* border: 1px solid skyblue; */
+        }
+        #anchors {
+            z-index: 2;
+        }
+        #tools {
+            position: absolute;
+            /* visibility: hidden; */
+            z-index: 1;
+        }
+        #capture-image {
+            z-index: 2;
+            top: 241px;
+            left: 228px;
+            width: 339px;
+            height: 277px;
+            display: block;
         }
     </style>
 </head>
 
 <body>
     <div class="mask"></div>
-    <div id="bg"></div>
-    <canvas id="canvas"></canvas>
+    <canvas id="bg"></canvas>
+    <canvas id="anchors"></canvas>
+    <canvas id="capture-image"></canvas>
+    <div class="tools" id="tools"></div>
 </body>
+<script src="./canvastools.js"></script>
 <script src="./render.js"></script>
 </html>

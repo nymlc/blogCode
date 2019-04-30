@@ -1,5 +1,5 @@
 const {
-    ipcMain, globalShortcut
+    app, ipcMain, globalShortcut
 } = require('electron')
 const os = require('os')
 const path = require('path')
@@ -26,8 +26,8 @@ const capture = () => {
         let captureWin = new BrowserWindow({
             // window 使用 fullscreen,  mac 设置为 undefined, 不可为 false
             fullscreen: os.platform() === 'win32' || undefined,
-            width: 500,
-            height: 500,
+            width: 800,
+            height: 800,
             x,
             y,
             transparent: true,
@@ -40,6 +40,7 @@ const capture = () => {
             hasShadow: false,
             show: false
         })
+        app.dock.hide()
         captureWin.setAlwaysOnTop(true, 'screen-saver')
         captureWin.setVisibleOnAllWorkspaces(true)
         captureWin.setFullScreenable(false)
@@ -65,6 +66,7 @@ const capture = () => {
         })
         captureWin.once('ready-to-show', () => {
             captureWin.show()
+            app.dock.show()
         })
         return captureWin
     })
