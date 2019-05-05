@@ -1,45 +1,37 @@
 
-const { getCurrentScreen } = require('./util')
 const { Anchor } = require('./anchor')
-const currentScreen = getCurrentScreen()
 
 const { getScreen } = require('./desktopCapturer')
-const $anchors = document.getElementById('anchors')
+const $mask = document.querySelector('.mask')
 const $captureImage = document.getElementById('capture-image')
 const $bg = document.getElementById('bg')
 const $tools = document.getElementById('tools')
-
 getScreen((imageSrc) => {
-    // new Render($captureImage, $tools, $bg, imageSrc)
-    // const tools = new CanvasTools($captureImage, {
-    //     container: $tools
-    // })
-    const anchor = new Anchor($anchors, $captureImage, $bg, imageSrc, tools, $tools)
-    const onDragEnd = () => {
-        if (anchor.selectRect) {
-            const { x2, y2 } = anchor.selectRect
-            $tools.style.visibility = 'visible'
-            $tools.style.top = `${y2 + 15}px`
-            $tools.style.right = `${400}px`
-        }
-    }
+    $mask.style.display = 'block'
+    const anchor = new Anchor($captureImage, $bg, imageSrc, $tools)
+    const onDragEnd = () => {}
     anchor.on('end-dragging', onDragEnd)
+    document.body.addEventListener('mousedown', ({button}) => {
+        if (button === 2) {
+            if (anchor.selectRect) {
+                anchor.resetCapture()
+            } else {
+                window.close()
+            }
+        }
+    }, true)
 })
-document.body.addEventListener('mousedown', ({button}) => {
-    if (button === 2) {
-        window.close()
-    }
-}, true)
 
-
+global.sendFileToPC = function (canvas) {
+    const dataURL = canvas.toDataURL('image/jpeg')
+    // ipcRenderer.send('send-file-to-pc', dataURL)
+}
+global.cancelCapture = function () {
+    window.close()
+}
+/*
 class Render {
-    /**
-     * 
-     * @param {*} $canvas 圈选的区域
-     * @param {*} $tools 工具栏
-     * @param {*} $bg 截图瞬间的供圈选的背景
-     * @param {*} bgSrc 截图的src
-     */
+
     constructor($canvas, $tools, $bg, bgSrc) {
         // 截图区域的环境
         this.$canvas = $canvas
@@ -210,3 +202,4 @@ class Render {
         this.isClean = true // 画布是否为空
     }
 }
+*/

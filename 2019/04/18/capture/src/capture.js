@@ -26,8 +26,8 @@ const capture = () => {
         let captureWin = new BrowserWindow({
             // window 使用 fullscreen,  mac 设置为 undefined, 不可为 false
             fullscreen: os.platform() === 'win32' || undefined,
-            width: 800,
-            height: 800,
+            width,
+            height,
             x,
             y,
             transparent: true,

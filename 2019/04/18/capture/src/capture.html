@@ -14,53 +14,88 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
+        #bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
         .mask {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: 2;
             background: rgba(0, 0, 0, 0.6);
-        }
-        #bg {
-            position: absolute;
-            top: 0;
-            left: 0;
+            display: none;
         }
         canvas {
             position: absolute;
-            /* visibility: hidden; */
-            z-index: 1;
-            /* border: 1px solid skyblue; */
         }
-        #anchors {
-            z-index: 2;
+        #capture-image {
+            z-index: 3;
+            display: block;
+            cursor: move;
         }
         #tools {
             position: absolute;
-            /* visibility: hidden; */
-            z-index: 1;
+            display: none;
+            z-index: 3;
         }
-        #capture-image {
-            z-index: 2;
-            top: 241px;
-            left: 228px;
-            width: 339px;
-            height: 277px;
+        .border {
             display: block;
+            position: absolute;
+            background-color: aqua;
+            z-index: 4;
+        }
+        .anchor {    
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            background-color: #fff;
+            z-index: 5;
+            display: none;
+        }
+        .anchor--1, .anchor--5 {
+            cursor: nwse-resize;
+        }
+        .anchor--3, .anchor--7 {
+            cursor: nesw-resize;
+        }
+        .anchor--2, .anchor--6, .border--1, .border--3 {
+            cursor: ns-resize;
+        }
+        .anchor--4, .anchor--8, .border--2, .border--4 {
+            cursor: ew-resize;
         }
     </style>
 </head>
 
 <body>
-    <div class="mask"></div>
     <canvas id="bg"></canvas>
+    <div class="mask"></div>
     <canvas id="anchors"></canvas>
-    <canvas id="capture-image"></canvas>
+    <canvas id="capture-image" width="0" height="0"></canvas>
     <div class="tools" id="tools"></div>
+    <!-- 锚点从左上角开始顺时针 -->
+    <span data-zoom="x1y1" class="anchor anchor--1"></span>
+    <span data-zoom="y1" class="anchor anchor--2"></span>
+    <span data-zoom="x2y1" class="anchor anchor--3"></span>
+    <span data-zoom="x2" class="anchor anchor--4"></span>
+    <span data-zoom="x2y2" class="anchor anchor--5"></span>
+    <span data-zoom="y2" class="anchor anchor--6"></span>
+    <span data-zoom="x1y2" class="anchor anchor--7"></span>
+    <span data-zoom="x1" class="anchor anchor--8"></span>
+    <!-- 边框上下左右 -->
+    <span data-zoom="y1" class="border border--1"></span>
+    <span data-zoom="x2" class="border border--2"></span>
+    <span data-zoom="y2" class="border border--3"></span>
+    <span data-zoom="x1" class="border border--4"></span>
 </body>
 <script src="./canvastools.js"></script>
 <script src="./render.js"></script>

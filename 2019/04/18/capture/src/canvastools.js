@@ -151,6 +151,12 @@ var ButtonsMap = {
 	},
 	save: {
 		name: '保存'
+	},
+	cancel: {
+		name: '取消'
+	},
+	ok: {
+		name: '确定'
 	}
 
 	//可用颜色
@@ -512,7 +518,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 //stroke类型操作
-var STROKE_TYPES = ['rect', 'ellipse', 'brush', 'arrow', 'mosaic', 'font', 'rubber'];
+var STROKE_TYPES = ['rect', 'ellipse', 'brush', 'arrow', 'mosaic', 'font', 'rubber', 'drag'];
 
 //默认颜色
 var STROKE_DEFAULT_COLOR = '#fb3838';
@@ -715,7 +721,7 @@ var defaults = {
 	//工具条父级对象容器
 	container: document.body,
 	//显示按钮
-	buttons: ['rect', 'ellipse', 'brush', 'arrow', 'font', 'mosaic', 'undo', 'drag', 'resume', 'save']
+	buttons: ['rect', 'ellipse', 'brush', 'arrow', 'font', 'mosaic', 'undo', 'resume', 'save', 'cancel', 'ok', 'drag']
 
 	//创建一个下载链接
 };var $saveLink = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
@@ -725,7 +731,15 @@ var canUseSaveLink = 'download' in $saveLink;
 
 //下载文件
 var __downloadFile = function __downloadFile() {
-	var fileName = 'canvas_' + Date.now() + '.png';
+	var t = new Date();
+	var formatFn = function formatFn(num) {
+		if (num.toString().length === 2 || num.toString().length === 4) {
+			return num.toString();
+		}
+		return '0' + num;
+	};
+	var timeStr = [t.getFullYear(), t.getMonth() + 1, t.getDate(), t.getHours(), t.getMinutes(), t.getSeconds()].map(formatFn).join('');
+	var fileName = 'IMG' + timeStr + '.png';
 	var canvas = this.canvas;
 
 	if (canUseSaveLink) {
@@ -749,6 +763,14 @@ var __downloadFile = function __downloadFile() {
 		else {
 				console.log('您的浏览器不支持该操作');
 			}
+};
+
+var _sendFile = function _sendFile() {
+	var canvas = this.canvas;
+	sendFileToPC(canvas);
+};
+var _cancelCapture = function _cancelCapture() {
+	cancelCapture();
 };
 
 //相关事件绑定
@@ -814,7 +836,14 @@ function __bindEvents() {
 			//$fontPanel.style.display = 'none'
 			//$strokePanel.style.display = 'none'
 		}
-
+		if (value === 'ok') {
+			_sendFile.call(self);
+			return;
+		}
+		if (value === 'cancel') {
+			_cancelCapture.call(self);
+			return;
+		}
 		if (value === 'save') {
 			__downloadFile.call(self);
 			return;
@@ -1377,7 +1406,7 @@ var CanvasTools = function () {
 		}
 	}, {
 		key: 'refreshSize',
-		value: function refreshSize(canvas, hmovex, hmovey, isNewDraw) {
+		value: function refreshSize(canvas) {
 			if (!canvas || typeof canvas.getContext !== 'function') {
 				throw new Error('invalid canvas object');
 			}
@@ -1388,21 +1417,15 @@ var CanvasTools = function () {
 
 			this.rect.offsetWidth = canvas.offsetWidth;
 			this.rect.offsetHeight = canvas.offsetHeight;
-			this.hmovex = hmovex;
-			this.hmovey = hmovey;
 			var rect = canvas.getBoundingClientRect();
 			this.rect.top = rect.top;
 			this.rect.left = rect.left;
-			if (isNewDraw) {
-				this.state.drawType = 'drag';this.bound = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-			};
 			//保存现场
 			this.state.lastImageData = this.context.getImageData(0, 0, this.rect.width, this.rect.height);
 			this.history.length = 0;
 			//将画布的初始状态保存到历史记录
 			__pushHistory.call(this);
 			__toggleCanvasCursor.call(this);
-			__refreshDrawHistory.call(this);
 		}
 	}]);
 
