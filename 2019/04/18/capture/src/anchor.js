@@ -92,6 +92,8 @@ class Anchor extends Events {
                 } else {
                     this.action = GRAFFITI
                 }
+            } else {
+                this.mouseDown = false
             }
         } else {
             this.action = CREATE
@@ -130,7 +132,7 @@ class Anchor extends Events {
                     container: this.$tools
                 })
             } else {
-                // this.tools.refreshSize(this.$captureImage, 0, 0, true)
+                this.tools.refreshSize(this.$captureImage)
             }
         }
         this.startPoint = null
@@ -202,6 +204,12 @@ class Anchor extends Events {
                 }
                 selectRect.h = selectRect.y2 - selectRect.y1
             }
+            selectRect.x1 = selectRect.x1 < 0 ? 0 : selectRect.x1
+            selectRect.y1 = selectRect.y1 < 0 ? 0 : selectRect.y1
+            selectRect.x2 = selectRect.x2 < 0 ? 0 : selectRect.x2
+            selectRect.y2 = selectRect.y2 < 0 ? 0 : selectRect.y2
+            selectRect.w = selectRect.x2 - selectRect.x1
+            selectRect.h = selectRect.y2 - selectRect.y1
         } else if (action === CREATE) {
             const { x: sx, y: sy } = this.startPoint
             let x1, x2, y1, y2
@@ -345,10 +353,28 @@ class Anchor extends Events {
         this.reset()
     }
     showTools() {
-        const { $tools, selectRect: { x2, y2 }, screenWidth } = this
+        const { $tools, selectRect: { y1, x2, y2 }, screenWidth, screenHeight } = this
         $tools.style.display = 'block'
-        $tools.style.top = `${y2 + 15}px`
-        $tools.style.right = `${screenWidth - x2 + 5}px`
+        const pos = ['top', 'right', 'bottom', 'left']
+        pos.forEach(key => {
+            $tools.style[key] = ''
+        })
+        // 底部放不下
+        if (y2 + 75 >= screenHeight) {
+            // 顶部放不下
+            if (y1 <= 75) {
+                $tools.style.bottom = `12px`
+            } else {
+                $tools.style.bottom = `${screenHeight - y1 + 12}px`
+            }
+        } else {
+            $tools.style.top = `${y2 + 12}px`
+        }
+        if (x2 > 362) {
+            $tools.style.right = `${screenWidth - x2 + 5}px`
+        } else {
+            $tools.style.left = `5px`
+        }
     }
     hideTools() {
         const { $tools } = this

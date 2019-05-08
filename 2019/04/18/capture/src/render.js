@@ -1,4 +1,4 @@
-
+const { clipboard, nativeImage, ipcRenderer } = require('electron')
 const { Anchor } = require('./anchor')
 
 const { getScreen } = require('./desktopCapturer')
@@ -24,7 +24,9 @@ getScreen((imageSrc) => {
 
 global.sendFileToPC = function (canvas) {
     const dataURL = canvas.toDataURL('image/jpeg')
-    // ipcRenderer.send('send-file-to-pc', dataURL)
+    clipboard.writeImage(nativeImage.createFromDataURL(dataURL))
+    ipcRenderer.send('send-file-to-pc')
+    window.close()
 }
 global.cancelCapture = function () {
     window.close()

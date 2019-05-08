@@ -14,6 +14,8 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+        html, body {
             overflow: hidden;
         }
 
@@ -39,7 +41,6 @@
         #capture-image {
             z-index: 3;
             display: block;
-            cursor: move;
         }
         #tools {
             position: absolute;
@@ -49,7 +50,7 @@
         .border {
             display: block;
             position: absolute;
-            background-color: aqua;
+            background-color: #00aeff;
             z-index: 4;
         }
         .anchor {    
@@ -58,8 +59,10 @@
             height: 8px;
             border-radius: 4px;
             background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.6);
             z-index: 5;
             display: none;
+            box-sizing: border-box;
         }
         .anchor--1, .anchor--5 {
             cursor: nwse-resize;
@@ -79,7 +82,6 @@
 <body>
     <canvas id="bg"></canvas>
     <div class="mask"></div>
-    <canvas id="anchors"></canvas>
     <canvas id="capture-image" width="0" height="0"></canvas>
     <div class="tools" id="tools"></div>
     <!-- 锚点从左上角开始顺时针 -->

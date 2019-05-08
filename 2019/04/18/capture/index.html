@@ -17,6 +17,9 @@
         document.getElementById('capture').addEventListener('click', function () {
             ipcRenderer.send('capture')
         })
+        ipcRenderer.on('paste-to-send', () => {
+            alert('paste-to-send')
+        })
     }
 </script>
 

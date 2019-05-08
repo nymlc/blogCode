@@ -26,7 +26,7 @@ const capture = () => {
         let captureWin = new BrowserWindow({
             // window 使用 fullscreen,  mac 设置为 undefined, 不可为 false
             fullscreen: os.platform() === 'win32' || undefined,
-            width,
+            width: 800,
             height,
             x,
             y,
@@ -71,7 +71,7 @@ const capture = () => {
         return captureWin
     })
 }
-const init = () => {
+const init = (mainWin) => {
     globalShortcut.register('Esc', () => {
         if (captureWins) {
             captureWins.forEach(win => win.close())
@@ -87,6 +87,12 @@ const init = () => {
                 capture()
                 break
         }
+    })
+    ipcMain.on('send-file-to-pc', (event) => {
+        if(!mainWin) {
+            return
+        }
+        mainWin.webContents.send('paste-to-send')
     })
 }
 exports.init = init

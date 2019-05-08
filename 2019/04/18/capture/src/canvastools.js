@@ -160,7 +160,7 @@ var ButtonsMap = {
 	}
 
 	//可用颜色
-};var ColorList = ['#000000', '#808080', '#800000', '#f7883a', '#308430', '#385ad3', '#800080', '#009999', '#ffffff', '#c0c0c0', '#fb3838', '#ffff00', '#99cc00', '#3894e4', '#f31bf3', '#16dcdc'];
+};var ColorList = ['#ff2600', '#ffeb00', '#61ed00', '#00b4ff', '#a100ff', '#000000', '#545454', '#a8a8a8', '#ffffff'];
 
 //可选择字号，Chrome不支持小于12号的字体
 var FontSize = [12, 14, 16, 18, 20, 22];
@@ -195,26 +195,20 @@ var getButtons = function getButtons() {
  * @return {String}
  */
 var getColorPanel = function getColorPanel() {
-	var color = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '#fb3838';
+	var color = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '#ff2600';
 
 	var html = '';
 	html += '<div class="colors">';
-	html += '<span class="color-selected"><i class="js-color-selected" style="background:' + color + '"></i></span>';
+	// html += `<span class="color-selected"><i class="js-color-selected" style="background:${color}"></i></span>`
 	html += '<div class="color-list">';
 
-	var items1 = [],
-	    items2 = [];
-	for (var i = 0; i < 16; i++) {
-		var item = '<li class="js-color" style="background:' + ColorList[i] + '" data-value="' + ColorList[i] + '"></li>';
-		if (i < 8) {
-			items1.push(item);
-		} else {
-			items2.push(item);
-		}
+	var items = [];
+	for (var i = 0; i < 9; i++) {
+		var item = '<li class="js-color" style="background:' + ColorList[i] + '; border-color: ' + (color === ColorList[i] ? '#fff' : '#2a2e32') + '" data-value="' + ColorList[i] + '"></li>';
+		items.push(item);
 	}
 
-	html += '<ul>' + items1.join('') + '</ul>';
-	html += '<ul>' + items2.join('') + '</ul>';
+	html += '<ul>' + items.join('') + '</ul>';
 
 	html += '</div>';
 	html += '</div>';
@@ -249,13 +243,14 @@ var getStrokePanel = function getStrokePanel() {
 var getFontPanel = function getFontPanel() {
 	var fontSize = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 12;
 
-	var html = '<select class="font-select js-font-size">';
+	var html = '<div class="strokes"><span>字号</span><select class="font-select js-font-size">';
 	for (var i = 0, len = FontSize.length; i < len; i++) {
 		var size = FontSize[i];
 		var selected = !!(size === fontSize) ? 'selected' : '';
 		html += '<option value="' + size + '" ' + selected + '>' + size + '</option>';
 	}
 	html += '</select>';
+	html += '</div>';
 	return html;
 };
 
@@ -266,7 +261,7 @@ var getFontPanel = function getFontPanel() {
  */
 var getAmbiguity = function getAmbiguity() {
 	var ambiguite = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : .5;
-	return '<label class="ambiguite-range"><span>\u6A21\u7CCA\u5EA6</span><input type="range" min="0" step="0.01" max="1" value="' + ambiguite + '" class="js-mosaic-ambiguity"></label>';
+	return '<label class="ambiguite-range"><span>\u753B\u7B14\u6A21\u7CCA\u5EA6</span><input type="range" min="0" step="0.01" max="1" value="' + ambiguite + '" class="js-mosaic-ambiguity"></label>';
 };
 
 exports.default = {
@@ -469,6 +464,20 @@ var classList = function classList(elements) {
 	});
 };
 
+var siblingElem = function siblingElem(elem) {
+	var _nodes = [],
+	    _elem = elem;
+	while (elem = elem.previousSibling) {
+		_nodes.push(elem);
+	}
+
+	elem = _elem;
+	while (elem = elem.nextSibling) {
+		_nodes.push(elem);
+	}
+
+	return _nodes;
+};
 exports.default = {
 	$: $,
 	each: each,
@@ -478,7 +487,8 @@ exports.default = {
 	getComputedStyles: getComputedStyles,
 	classList: classList,
 	$on: $on,
-	$off: $off
+	$off: $off,
+	siblingElem: siblingElem
 };
 module.exports = exports['default'];
 
@@ -521,7 +531,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var STROKE_TYPES = ['rect', 'ellipse', 'brush', 'arrow', 'mosaic', 'font', 'rubber', 'drag'];
 
 //默认颜色
-var STROKE_DEFAULT_COLOR = '#fb3838';
+var STROKE_DEFAULT_COLOR = '#ff2600';
 
 //默认画笔大小
 var STROKE_DEFAULT_WIDTH = 2;
@@ -791,10 +801,14 @@ function __bindEvents() {
 	    $fontPanel = _utils2.default.$('.js-panel__font', $el)[0],
 	    $strokePanel = _utils2.default.$('.js-panel__stroke', $el)[0],
 	    $mosaicPanel = _utils2.default.$('.js-panel__mosaic', $el)[0],
-	    $colorSelected = _utils2.default.$('.js-color-selected', $el),
-	    $colors = _utils2.default.$('.js-color', $el),
+
+	// $colorSelected = utils.$('.js-color-selected', $el),
+	$colors = _utils2.default.$('.js-color', $el),
 	    $strokeWidth = _utils2.default.$('.js-stroke-width', $el),
 	    $fontSize = _utils2.default.$('.js-font-size', $el),
+	    $fontBold = _utils2.default.$('.js-font-bold', $el),
+	    $fontItalic = _utils2.default.$('.js-font-italic', $el),
+	    $fontDecoration = _utils2.default.$('.js-font-decoration', $el),
 	    $mosaicAmbiguity = _utils2.default.$('.js-mosaic-ambiguity', $el);
 
 	//按钮事件
@@ -832,6 +846,16 @@ function __bindEvents() {
 				$fontPanel.style.display = 'none';
 				$strokePanel.style.display = 'none';
 			}
+			if (isActive) {
+				if (self.$el.className.indexOf('panel--active') === -1) {
+					self.$el.className = self.$el.className.trim() + ' panel--active';
+				}
+			} else {
+				var res = self.$el.className.match(/^(.*)panel--active(.*)$/);
+				if (res) {
+					self.$el.className = res[1] + res[2];
+				}
+			}
 		} else {
 			//$fontPanel.style.display = 'none'
 			//$strokePanel.style.display = 'none'
@@ -866,9 +890,11 @@ function __bindEvents() {
 	_handles.toggleColor = function (event) {
 		var color = this.getAttribute('data-value');
 		state.strokeColor = color;
-		_utils2.default.each($colorSelected, function (index, item) {
-			return item.style.background = color;
+		_utils2.default.each(_utils2.default.siblingElem(this), function (index, item) {
+			item.style.borderColor = '#2a2e32';
 		});
+		this.style.borderColor = 'white';
+		// utils.each($colorSelected, (index, item) => item.style.background = color)
 	};
 
 	_handles.toggleStrokeWidth = function (event) {
@@ -993,6 +1019,19 @@ function __bindEvents() {
 		state.ambiguity = this.value;
 		console.log(state);
 	};
+	var $mosaicAmbiguityStyle = document.querySelector('style.canvas-tools-ambiguite');
+	_handles.mousemoveAmbiguity = function (event) {
+		var styleText = '.ambiguite-range input::-webkit-slider-runnable-track{background:linear-gradient(to right, #00b957 0%, #00b957 ' + this.value * 100 + '%, #1e2124 ' + this.value * 100 + '%, #1e2124);}';
+		if (!$mosaicAmbiguityStyle) {
+			var style = document.createElement('style');
+			style.className = 'canvas-tools-ambiguite';
+			style.innerText = styleText;
+			document.querySelector('head').append(style);
+			$mosaicAmbiguityStyle = document.querySelector('style.canvas-tools-ambiguite');
+		} else {
+			$mosaicAmbiguityStyle.innerText = styleText;
+		}
+	};
 
 	//按钮事件
 	_utils2.default.$on($btns, 'click', _handles.btnEmit);
@@ -1007,6 +1046,7 @@ function __bindEvents() {
 	_utils2.default.$on($fontSize, 'change', _handles.toggleFontSize);
 
 	_utils2.default.$on($mosaicAmbiguity, 'change', _handles.toggleAmbiguity);
+	_utils2.default.$on($mosaicAmbiguity, 'mousemove', _handles.mousemoveAmbiguity);
 
 	//矩形，椭圆，画笔等绘制
 	_utils2.default.$on(canvas, 'mousedown', _handles.onMouseDown);
@@ -1393,6 +1433,7 @@ var CanvasTools = function () {
 			_utils2.default.$off($strokeWidth, 'click', _handles.toggleStrokeWidth);
 			_utils2.default.$off($fontSize, 'change', _handles.toggleFontSize);
 			_utils2.default.$off($mosaicAmbiguity, 'change', _handles.toggleAmbiguity);
+			_utils2.default.$off($mosaicAmbiguity, 'mousemove', _handles.mousemoveAmbiguity);
 			_utils2.default.$off(canvas, 'mousedown', _handles.onMouseDown);
 			_utils2.default.$off(canvas, 'click', _handles.insertTextHelper);
 			_utils2.default.$off(document, 'click', _handles.removeTextHelper);

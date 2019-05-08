@@ -8,7 +8,6 @@ const { init } = require('./src/capture')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 function createWindow() {
-    init()
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 800,
@@ -31,6 +30,7 @@ function createWindow() {
         // when you should delete the corresponding element.
         mainWindow = null
     })
+    init(mainWindow)
 }
 
 // This method will be called when Electron has finished
