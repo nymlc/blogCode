@@ -123,9 +123,9 @@ class Anchor extends Events {
             return
         }
         this.mouseDown = false
-        const { action } = this
+        const { action, selectRect } = this
         const { button } = event
-        if (action !== GRAFFITI && button === 0) {
+        if (action !== GRAFFITI && button === 0 && selectRect) {
             this.showTools()
             if (!this.tools) {
                 this.tools = new CanvasTools(this.$captureImage, {
@@ -338,6 +338,7 @@ class Anchor extends Events {
         this.mouseDown = false
         this.startPoint = null
         this.selectRect = null
+        this.tools = null
     }
     resetCapture() {
         const { captureImageCtx, $captureImage } = this
@@ -349,7 +350,7 @@ class Anchor extends Events {
         const $borders = document.querySelectorAll('.border')
         $anchors.forEach(ele => ele.style.display = 'none')
         $borders.forEach(ele => ele.style.display = 'none')
-        this.hideTools()
+        this.tools && this.tools.destory()
         this.reset()
     }
     showTools() {
