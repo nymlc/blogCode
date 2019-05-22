@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<!-- <link rel="stylesheet" href="./demo.css"> -->
+	<link rel="stylesheet" href="../dist/canvastools.css">
+	<link rel="stylesheet" href="https://popper.js.org/css/popper.css">
+	<style type="text/css">
+		canvas {
+			position: absolute;
+			border: 1px solid aqua;
+		}
+		.popper, .tooltip {
+			font-size: 12px;
+			background: #fff;
+			padding: 4px;
+			width: auto;
+		}
+		.tooltip .tooltip-arrow, .popper .popper__arrow {
+			border-color: #fff;
+			visibility: hidden;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas" width="800" height="800"></canvas>
+	<div class="tools" id="tools2"></div>
+	<script src="../dist/canvastools.js"></script>
+	<script>
+		var cTools2
+		cTools2 = new CanvasTools(canvas, {
+			container: document.getElementById('tools2')
+		})
+	</script>
+</body>
+
+</html>
