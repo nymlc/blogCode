@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/element.css">
+</head>
+
+<body>
+    <div id="app" :style="{marginTop: storageIndex == null ? '20px' : '20px'}">
+        <div class="storage">
+            <el-tag v-for="(itm, i) in storages" :key="i" :type="storageIndex === i ? 'success' : 'info'" closable
+                @click.native.stop="onSelectStorage(i)" @close="onCloseStorage(itm.key)">
+                {{`Storage--${i+1}`}}
+            </el-tag>
+            <el-button size="small" :type="storageIndex == null ? 'primary' : ''" plain @click="addNewStorage">+ New Storage</el-button>
+        </div>
+        <div class="panel">
+            <div class="status">
+                <div class="status__opera">
+                    <el-switch v-show="storageIndex != null" v-model="edit" inactive-text="显示">
+                    </el-switch>
+                    <el-button v-show="edit" type="primary" plain size="small" @click="saveStorage">Save</el-button>
+                </div>
+                <div class="status__info">
+                    <span>
+                        总步数：{{ totalSetpNum }}
+                    </span>
+                    <span>
+                        当前步数：{{ setpNum + 1 }}
+                    </span>
+                </div>
+            </div>
+            <div class="code">
+                <pre>
+                        <p v-for="(itm, i) in codeFormat" 
+                            :key="i" 
+                            :id=`${i}st` 
+                            :class="{hight: `${i}st` === current.id}"
+                            @click="onClickCode(`${i}st`)">{{ itm }}</p>
+                    </pre>
+            </div>
+            <div class="info">
+                <div class="tasks">
+                    <label>Tasks</label>
+                    <div class="content">
+                        <el-tag :type="i===0?'success':'info'" v-for="(itm, i) in current.tasks" :key="i" :closable="edit" @close="onCloseInfoTag('tasks', i)">
+                            {{itm}}
+                        </el-tag>
+                    </div>
+                    <div class="edit" v-if="edit">
+                        <el-input v-if="inputVisibletasks" v-model="inputValuetasks" ref="saveTagInputtasks"
+                            size="small" @keyup.enter.native="handleInputConfirm('tasks')"
+                            @blur="handleInputConfirm('tasks')">
+                        </el-input>
+                        <i v-else class="el-icon-plus" @click="showInput('tasks')"></i>
+                    </div>
+                </div>
+                <div class="jobs">
+                    <label>Jobs</label>
+                    <div class="content">
+                        <el-tag :type="i===0?'success':'info'" v-for="(itm, i) in current.jobs" :key="i" :closable="edit" @close="onCloseInfoTag('jobs', i)">
+                            {{itm}}
+                        </el-tag>
+                    </div>
+                    <div class="edit" v-if="edit">
+                        <el-input v-if="inputVisiblejobs" v-model="inputValuejobs" ref="saveTagInputjobs" size="small"
+                            @keyup.enter.native="handleInputConfirm('jobs')" @blur="handleInputConfirm('jobs')">
+                        </el-input>
+                        <i v-else class="el-icon-plus" @click="showInput('jobs')"></i>
+                    </div>
+                </div>
+                <div class="jsStack">
+                    <label>JS Stack</label>
+                    <div class="content">
+                        <el-tag :type="i===0?'success':'info'" v-for="(itm, i) in current.jsStack" :key="i" :closable="edit" @close="onCloseInfoTag('jsStack', i)">
+                            {{itm}}
+                        </el-tag>
+                    </div>
+                    <div class="edit" v-if="edit">
+                        <el-input v-if="inputVisiblejsStack" v-model="inputValuejsStack" ref="saveTagInputjsStack"
+                            size="small" @keyup.enter.native="handleInputConfirm('jsStack')"
+                            @blur="handleInputConfirm('jsStack')">
+                        </el-input>
+                        <i v-else class="el-icon-plus" @click="showInput('jsStack')"></i>
+                    </div>
+                </div>
+                <div class="log">
+                    <label>Logs</label>
+                    <div class="content">
+                        <el-tag v-for="(itm, i) in current.log" :key="i" :closable="edit" @close="onCloseInfoTag('log', i)">
+                            {{itm}}
+                        </el-tag>
+                    </div>
+                    <div class="edit" v-if="edit">
+                        <el-input v-if="inputVisiblelog" v-model="inputValuelog" ref="saveTagInputlog" size="small"
+                            @keyup.enter.native="handleInputConfirm('log')" @blur="handleInputConfirm('log')">
+                        </el-input>
+                        <i v-else class="el-icon-plus" @click="showInput('log')"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="opera">
+                <div class="btn pre" @click="onPre">Pre</div>
+                <div class="btn next" @click="onNext">Next</div>
+            </div>
+        </div>
+        <el-input
+            type="textarea"
+            :rows="2"
+            placeholder="autosize"
+            v-model="current.toast"
+            placeholder="Please input toast!"
+            v-show="edit">
+        </el-input>
+        <el-input
+            type="textarea"
+            :rows="8"
+            placeholder="autosize"
+            v-model="addCode"
+            placeholder="Please input code!"
+            v-show="storageIndex == null">
+        </el-input>
+        <el-input
+            type="textarea"
+            :rows="8"
+            placeholder="autosize"
+            v-model="editCode"
+            placeholder="Please input code!"
+            v-show="edit && storageIndex != null">
+        </el-input>
+    </div>
+</body>
+<script src="https://cdn.bootcss.com/lodash.js/4.17.15/lodash.js"></script>
+<script src="./js/vue.js"></script>
+<script src="./js/element.js"></script>
+<script src="./js/data.js"></script>
+<script src="./js/index.js"></script>
+
+</html>
