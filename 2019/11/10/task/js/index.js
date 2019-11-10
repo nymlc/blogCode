@@ -149,9 +149,9 @@ window.ln = new Vue({
                 return
             }
             const { tasks, code } = this.storages[nVal]
-            this.tasks = _.merge({}, tasks)
+            this.tasks = _.merge([], tasks)
             this.code = code
-            this.editTasks = _.merge({}, tasks)
+            this.editTasks = _.merge([], tasks)
             this.editCode = code
         }, {
             immediate: true
